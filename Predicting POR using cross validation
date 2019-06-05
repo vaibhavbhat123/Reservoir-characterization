@@ -2,7 +2,6 @@
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import ShuffleSplit
-import matplotlib.pyplot as plt
 
 
 data = pd.read_csv('E:/file3.csv')
@@ -57,6 +56,7 @@ def fit_model(X, y):
 
     # Transform 'performance_metric' into a scoring function using 'make_scorer' 
     scoring_fnc = make_scorer(performance_metric)
+    print("R2 score=",scoring_fnc)
 
     # Create the grid search cv object --> GridSearchCV()
     grid = GridSearchCV(estimator=regressor, param_grid=params, scoring=scoring_fnc, cv=cv_sets)
@@ -69,17 +69,13 @@ def fit_model(X, y):
 
 reg = fit_model(X_train, y_train)
 
+
 print("Parameter 'max_depth' is {} for the optimal model.".format(reg.get_params()['max_depth']))
 
 client_data = X_test
-y_pred = reg.predict(client_data)
-print(y_pred)
-print(y_test)
-fig, ax = plt.subplots()
-ax.scatter(y_test, y_pred, edgecolors=(0, 0, 0))
 
-ax.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'k--', lw=4)
-ax.set_xlabel('Actual')
-ax.set_ylabel('Predicted')
-ax.set_title("Actual vs Predicted")
-plt.show()
+for i, price in enumerate(reg.predict(client_data)):
+    print("Predicted porosity for Client {}'s data: {:,.2f}".format(i+1, price))
+print("Actual Value=",y_test)
+
+
